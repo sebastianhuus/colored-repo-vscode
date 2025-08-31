@@ -50,6 +50,22 @@ add_profile() {
     # backgroundcolor = y
 }
 
+show_help() {
+    echo "Colored Repo - VS Code Workspace Color Profile Manager"
+    echo ""
+    echo "Usage:"
+    echo "  colored-repo init-profiles       # Initialize profiles file with examples"
+    echo "  colored-repo list                # Show available color profiles"
+    echo "  colored-repo set                 # Interactive profile selection with gum"
+    echo "  colored-repo add <name>          # Add a new color profile"
+    echo "  colored-repo current             # Show current workspace colors"
+    echo "  colored-repo edit                # Edit profiles file"
+    echo "  colored-repo help                # Show this help message"
+    echo ""
+    echo "Available profiles are defined in ~/.colored-repo-profiles"
+    echo "Colors are applied to the current VS Code workspace (.vscode/settings.json)"
+}
+
 # list all the saved profiles from computer. use ~/.colored-repo-profiles
 list_profiles() {
 
