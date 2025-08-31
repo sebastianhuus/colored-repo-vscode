@@ -115,8 +115,27 @@ set_profile() {
     fi
     
     # Extract colors from profile
-    local foreground=$(grep -A 10 "^\[$profile_name\]" "$PROFILES_FILE" | grep "foregroundcolor" | cut -d'=' -f2 | tr -d ' "')
-    local background=$(grep -A 10 "^\[$profile_name\]" "$PROFILES_FILE" | grep "backgroundcolor" | cut -d'=' -f2 | tr -d ' "')
+    local foreground=$(awk -v profile="$profile_name" '
+        /^\[.*\]/ { current_section = substr($0, 2, length($0)-2) }
+        current_section == profile && /^foregroundcolor/ { 
+            gsub(/^[^=]*=[ \t]*/, ""); 
+            gsub(/[ \t]*$/, ""); 
+            gsub(/"/, "");
+            print; 
+            exit 
+        }
+    ' "$PROFILES_FILE")
+    
+    local background=$(awk -v profile="$profile_name" '
+        /^\[.*\]/ { current_section = substr($0, 2, length($0)-2) }
+        current_section == profile && /^backgroundcolor/ { 
+            gsub(/^[^=]*=[ \t]*/, ""); 
+            gsub(/[ \t]*$/, ""); 
+            gsub(/"/, "");
+            print; 
+            exit 
+        }
+    ' "$PROFILES_FILE")
     
     if [[ -z "$foreground" || -z "$background" ]]; then
         echo "Error: Profile '$profile_name' is missing color values"
