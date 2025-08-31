@@ -81,4 +81,44 @@ init() {
     touch $settings_file
 }
 
-init
+# Argument handler
+case "$1" in
+    "init-profiles"|"init")
+        init_profiles
+        ;;
+    "list"|"ls")
+        list_profiles
+        ;;
+    "set")
+        if [[ -z "$2" ]]; then
+            echo "Error: Profile name required"
+            echo "Run 'colored-repo list' to see available profiles"
+            exit 1
+        fi
+        set_profile "$2"
+        ;;
+    "add")
+        if [[ -z "$2" ]]; then
+            echo "Error: Profile name required"
+            echo "Usage: colored-repo add <profile-name>"
+            exit 1
+        fi
+        add_profile "$2" "$3" "$4"
+        ;;
+    "current"|"show")
+        show_current
+        ;;
+    "edit")
+        ${EDITOR:-nano} "$PROFILES_FILE"
+        ;;
+    "help"|"-h"|"--help"|"")
+        show_help
+        ;;
+    *)
+        if [[ -n "$1" ]]; then
+            echo "Unknown command: $1"
+        fi
+        show_help
+        exit 1
+        ;;
+esac
