@@ -149,12 +149,10 @@ set_profile() {
     cat > "$settings_file" << EOF
 {
     "workbench.colorCustomizations": {
-        "activityBar.background": "$background",
-        "activityBar.foreground": "$foreground",
-        "statusBar.background": "$background",
-        "statusBar.foreground": "$foreground",
         "titleBar.activeBackground": "$background",
-        "titleBar.activeForeground": "$foreground"
+        "titleBar.activeForeground": "$foreground",
+        "titleBar.inactiveBackground": "$background",
+        "titleBar.inactiveForeground": "$foreground"
     }
 }
 EOF
