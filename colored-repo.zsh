@@ -48,6 +48,7 @@ add_profile() {
     # [name]
     # foregroundcolor = x
     # backgroundcolor = y
+    echo "add_profile function not yet implemented"
 }
 
 show_help() {
@@ -68,12 +69,17 @@ show_help() {
 
 # list all the saved profiles from computer. use ~/.colored-repo-profiles
 list_profiles() {
-
+    echo "list_profiles function not yet implemented"
 }
 
 set_profile() {
     # sets the profile of current repo to some existing profiles
     # should use gum select or gum filter
+    echo "set_profile function not yet implemented"
+}
+
+show_current() {
+    echo "show_current function not yet implemented"
 }
 
 init() {
