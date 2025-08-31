@@ -61,6 +61,7 @@ show_help() {
     echo "  colored-repo add <name>          # Add a new color profile"
     echo "  colored-repo current             # Show current workspace colors"
     echo "  colored-repo edit                # Edit profiles file"
+    echo "  colored-repo install             # Install colored-repo globally (symlink to /usr/local/bin)"
     echo "  colored-repo help                # Show this help message"
     echo ""
     echo "Available profiles are defined in ~/.colored-repo-profiles"
@@ -166,6 +167,46 @@ show_current() {
     echo "show_current function not yet implemented"
 }
 
+install() {
+    local script_path="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+    local bin_path="/usr/local/bin/colored-repo"
+    
+    # Check if /usr/local/bin exists
+    if [[ ! -d "/usr/local/bin" ]]; then
+        echo "Error: /usr/local/bin directory does not exist"
+        echo "You may need to create it with: sudo mkdir -p /usr/local/bin"
+        return 1
+    fi
+    
+    # Check if symlink already exists
+    if [[ -L "$bin_path" ]]; then
+        echo "Symlink already exists at $bin_path"
+        echo "Current target: $(readlink "$bin_path")"
+        read -q "REPLY?Replace existing symlink? (y/n): "
+        echo
+        if [[ ! "$REPLY" =~ ^[Yy]$ ]]; then
+            echo "Installation cancelled"
+            return 1
+        fi
+        sudo rm "$bin_path"
+    elif [[ -f "$bin_path" ]]; then
+        echo "Error: File already exists at $bin_path (not a symlink)"
+        echo "Please remove it manually and try again"
+        return 1
+    fi
+    
+    # Create symlink
+    if sudo ln -s "$script_path" "$bin_path"; then
+        echo "✅ Successfully installed colored-repo to $bin_path"
+        echo "You can now use 'colored-repo' from anywhere!"
+        echo ""
+        echo "Try: colored-repo help"
+    else
+        echo "❌ Failed to create symlink. Check permissions."
+        return 1
+    fi
+}
+
 init() {
     mkdir .vscode
     touch $settings_file
@@ -195,6 +236,9 @@ case "$1" in
         ;;
     "edit")
         ${EDITOR:-nano} "$PROFILES_FILE"
+        ;;
+    "install")
+        install
         ;;
     "help"|"-h"|"--help"|"")
         show_help
