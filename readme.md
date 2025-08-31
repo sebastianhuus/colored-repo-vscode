@@ -1,5 +1,7 @@
 # Colored Repo - VS Code Title Bar Colorizer
 
+![Colored Repo Demo](readme-image.png)
+
 A simple zsh tool that lets you customize the title bar color of VS Code workspaces. This is particularly useful when working across different repositories or worktrees, as it provides instant visual identification of which project you're currently in.
 
 ## Why Use This?
