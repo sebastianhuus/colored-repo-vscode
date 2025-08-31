@@ -69,13 +69,80 @@ show_help() {
 
 # list all the saved profiles from computer. use ~/.colored-repo-profiles
 list_profiles() {
-    echo "list_profiles function not yet implemented"
+    if [[ ! -f "$PROFILES_FILE" ]]; then
+        echo "No profiles file found at $PROFILES_FILE"
+        echo "Run 'colored-repo init-profiles' to create one"
+        return 1
+    fi
+    
+    # Extract profile names from INI file (lines starting with [profile-name])
+    grep '^\[' "$PROFILES_FILE" | sed 's/^\[\(.*\)\]$/\1/'
 }
 
 set_profile() {
     # sets the profile of current repo to some existing profiles
     # should use gum select or gum filter
-    echo "set_profile function not yet implemented"
+    
+    if [[ ! -f "$PROFILES_FILE" ]]; then
+        echo "No profiles file found at $PROFILES_FILE"
+        echo "Run 'colored-repo init-profiles' to create one"
+        return 1
+    fi
+    
+    local profile_name="$1"
+    
+    # If no profile name provided, use gum filter for interactive selection
+    if [[ -z "$profile_name" ]]; then
+        profile_name=$(list_profiles | gum filter \
+            --header="Select a color profile:" \
+            --placeholder="Type to filter profiles..." \
+            --prompt="❯ " \
+            --select-if-one)
+        
+        # Check if user cancelled selection
+        if [[ -z "$profile_name" ]]; then
+            echo "No profile selected"
+            return 1
+        fi
+    fi
+    
+    # Validate profile exists
+    if ! grep -q "^\[$profile_name\]" "$PROFILES_FILE"; then
+        echo "Profile '$profile_name' not found"
+        echo "Available profiles:"
+        list_profiles
+        return 1
+    fi
+    
+    # Extract colors from profile
+    local foreground=$(grep -A 10 "^\[$profile_name\]" "$PROFILES_FILE" | grep "foregroundcolor" | cut -d'=' -f2 | tr -d ' "')
+    local background=$(grep -A 10 "^\[$profile_name\]" "$PROFILES_FILE" | grep "backgroundcolor" | cut -d'=' -f2 | tr -d ' "')
+    
+    if [[ -z "$foreground" || -z "$background" ]]; then
+        echo "Error: Profile '$profile_name' is missing color values"
+        return 1
+    fi
+    
+    # Create .vscode directory if it doesn't exist
+    mkdir -p "$vscode_folder"
+    
+    # Create or update settings.json with workbench colors
+    cat > "$settings_file" << EOF
+{
+    "workbench.colorCustomizations": {
+        "activityBar.background": "$background",
+        "activityBar.foreground": "$foreground",
+        "statusBar.background": "$background",
+        "statusBar.foreground": "$foreground",
+        "titleBar.activeBackground": "$background",
+        "titleBar.activeForeground": "$foreground"
+    }
+}
+EOF
+    
+    echo "Applied profile '$profile_name' to current workspace"
+    echo "Foreground: $foreground"
+    echo "Background: $background"
 }
 
 show_current() {
@@ -96,11 +163,6 @@ case "$1" in
         list_profiles
         ;;
     "set")
-        if [[ -z "$2" ]]; then
-            echo "Error: Profile name required"
-            echo "Run 'colored-repo list' to see available profiles"
-            exit 1
-        fi
         set_profile "$2"
         ;;
     "add")
