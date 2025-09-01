@@ -4,29 +4,7 @@ PROFILES_FILE="$HOME/.colored-repo-profiles"
 
 init_profiles() {
     if [[ -f "$PROFILES_FILE" ]]; then
-        echo "Profiles file already einit() {
-    mkdir -p .vscode
-    touch $settings_file
-    
-    # Create .git/info/exclude if .git directory exists
-    if [[ -d ".git" ]]; then
-        mkdir -p .git/info
-        local exclude_file=".git/info/exclude"
-        
-        # Check if settings exclusion already exists
-        if [[ -f "$exclude_file" ]] && grep -q "\.vscode/[Ss]ettings\.json" "$exclude_file"; then
-            echo "VS Code settings already excluded in $exclude_file"
-        else
-            echo "" >> "$exclude_file"
-            echo "# VS Code workspace settings (added by colored-repo)" >> "$exclude_file"
-            echo ".vscode/Settings.json" >> "$exclude_file"
-            echo ".vscode/settings.json" >> "$exclude_file"
-            echo "Added VS Code settings exclusion to $exclude_file"
-        fi
-    else
-        echo "Warning: Not a git repository. Skipping .git/info/exclude setup."
-    fi
-}s at $PROFILES_FILE"
+        echo "Profiles file already exists at $PROFILES_FILE"
         echo "Use your editor to modify it"
         return 1
     fi
@@ -62,6 +40,30 @@ EOF
     
     echo "Created profiles file at $PROFILES_FILE"
     echo "Edit the file to add your actual color profiles"
+}
+
+init() {
+    mkdir -p .vscode
+    touch $settings_file
+    
+    # Create .git/info/exclude if .git directory exists
+    if [[ -d ".git" ]]; then
+        mkdir -p .git/info
+        local exclude_file=".git/info/exclude"
+        
+        # Check if settings exclusion already exists
+        if [[ -f "$exclude_file" ]] && grep -q "\.vscode/[Ss]ettings\.json" "$exclude_file"; then
+            echo "VS Code settings already excluded in $exclude_file"
+        else
+            echo "" >> "$exclude_file"
+            echo "# VS Code workspace settings (added by colored-repo)" >> "$exclude_file"
+            echo ".vscode/Settings.json" >> "$exclude_file"
+            echo ".vscode/settings.json" >> "$exclude_file"
+            echo "Added VS Code settings exclusion to $exclude_file"
+        fi
+    else
+        echo "Warning: Not a git repository. Skipping .git/info/exclude setup."
+    fi
 }
 
 add_profile() {
@@ -227,11 +229,6 @@ install() {
         echo "❌ Failed to create symlink. Check permissions."
         return 1
     fi
-}
-
-init() {
-    mkdir .vscode
-    touch $settings_file
 }
 
 # Argument handler
